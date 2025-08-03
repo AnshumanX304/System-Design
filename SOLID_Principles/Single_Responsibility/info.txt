@@ -1,0 +1,29 @@
+Single Responsibility Principle (SRP)
+
+    Definition:
+        A class should have only one reason to change, meaning it should do only one thing.
+
+    Purpose:
+        Improves maintainability, readability, and testability.
+
+    Example:
+        A User class that both stores user data and sends emails → violates SRP.
+
+        Split into:
+
+            User → manages user data
+
+            EmailService → handles sending emails
+
+Benefits:
+
+    Easier to modify code without breaking unrelated logic
+
+    Cleaner separation of concerns
+
+    Smaller, more focused classes
+
+
+SRP in a nutshell:
+
+    "Do one thing, and do it well."
