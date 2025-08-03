@@ -1,0 +1,54 @@
+1. Basic Structure of a Java Program
+
+    The main method is the entry point.
+
+    public class name must match the filename (Running_java.java).
+
+    A file must have a single public class only which will act as the entry point.
+
+    Compilation: javac Running_java.java
+
+    Running: java Running_java (no .class or .java in the command)
+
+2. Java Rule: You can define multiple classes in one .java file, but…
+    # Only one of them can be declared as public
+    # The file must be named after that public class
+    # All classes will be compiled, but only those with main() can be run directly
+
+2. File Name vs Class Name
+
+    Situation	                    Rule
+    Class is public	                File name must match the class name
+    Class is not public	            File name can be anything
+    Multiple classes in one file	Only one can be public
+    File has no main method	        Can compile, but cannot run directly
+
+
+3. Can I Run Any Class Separately?
+
+    Yes, if the class has a main() method.
+
+4. Packages and Folders
+
+    package Basics;
+    File must be inside Basics/ folder
+    Must be compiled and run from the parent folder 
+
+5. Compilation  needed or not 
+
+    Case	                    Compile Needed?	                Command
+    Java 8 or below	            Yes	                            javac A.java then java A
+    Java 11+ (no package)	    No	                            java A.java
+    Java 11+ with package	    Yes	                            javac pkg/A.java, java pkg.A
+
+
+6. How to Handle Same Class Names in Java (e.g., A.java and A.java)
+    1. You cannot have two classes with the same name in the same package
+        If both File1.java and File2.java define a class A inside the same package (e.g., package Basics;), then:
+            Both will compile.
+            The second compilation will overwrite the previous A.class.
+
+    2. Use different packages to avoid conflict
+        Place each A.java file in its own package (namespace), like:
+        package Basics.one;
+        package Basics.two;
