@@ -1,0 +1,10 @@
+OPEN/CLOSED PRINCIPLE-:
+
+=> The code must be open to extension but closed for modification 
+   This means that software entities(class, modules and fucntions) should be open for extension but closed 
+   for modification, which means you should be able to extend the class behaviour without modifying it.
+
+=> Benefits-:
+    1> Prevent breaking the existing code
+    2> Encourages reusable components
+
