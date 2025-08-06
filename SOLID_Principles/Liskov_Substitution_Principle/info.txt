@@ -1,0 +1,10 @@
+Liskov's Substitution Principle-:
+
+Any class that is child of its parent class should be usable in place of its parents without
+any unexpected behaviour.
+
+Benefits-:
+
+1> Ensures realiability when using polymorphism
+2> Avoids unexpected behaviour in subclass implementations.
+
