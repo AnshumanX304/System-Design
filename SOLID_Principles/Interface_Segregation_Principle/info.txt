@@ -2,7 +2,7 @@ Interface segregation principle-:
 
 (only solid principle that applies to interfaces and not classes)
 
-1> ISP allows us to unburden and break down heft interfaces to multiple chunks and segregate then based 
+1> ISP allows us to unburden and break down hefty interfaces to multiple chunks and segregate them based 
 on their functionalities.
 2> This allows us to not force any client to implement an interface which is irrelevant to them.
 3> You should prefer many client interfaces rather than one general interface and each interface should have a specific responsibility.
