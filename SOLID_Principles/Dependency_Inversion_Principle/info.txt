@@ -1,0 +1,20 @@
+Dependency Inversion Principle-:
+
+1>  The Dependency Inversion Principle (DIP) is a principle in object-oriented design 
+    that states that High-level modules should not depend on low-level modules. 
+    Both should depend on abstractions. Additionally, abstractions should not depend on details. 
+    Details should depend on abstractions.
+
+    ->  This actually means that a class should not depend on another concrete class.
+        because if this happens then both the classes will be tightly coupled and will be
+        be very difficult to modify i.e we'll need to change the entire code of the depending class 
+        to meet the new requirements.
+        If it were an abstraction we could have swiftly created a new class without changing the current class 
+        implementation and could have replaced the interface's intance (which was previously 
+        spawned by other class) with a new class implementation.
+
+    ->  In simpler terms, the DIP suggests that classes should rely on abstractions (e.g., interfaces or abstract classes)
+        rather than concrete implementations. This allows for more flexible and decoupled code, making it 
+        easier to change implementations without affecting other parts of the codebase.
+
+‍
