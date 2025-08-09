@@ -1,0 +1,16 @@
+# YAGNI Principle in Java
+
+## Description
+- YAGNI stands for "You Aren’t Gonna Need It".
+- It means you should not implement functionality until it is actually required.
+- Prevents wasted time and reduces unnecessary complexity.
+
+## Invalid Code
+- Adds extra unused methods (Excel report generation, email sending).
+- Increases maintenance effort and potential bugs.
+- Violates YAGNI by building for future needs that might never come.
+
+## Valid Code
+- Implements only the required functionality (PDF generation).
+- Keeps code clean, focused, and easy to maintain.
+- Additional features will be added only when a real need arises.
