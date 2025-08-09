@@ -1,0 +1,15 @@
+1. DRY Principle in Java
+
+2. Description
+- DRY stands for "Don't Repeat Yourself".
+- It encourages avoiding duplicate code by centralizing common logic.
+
+3. Invalid Code
+- Contains repeated printing logic in multiple classes.
+- Any change in printing requires modifying code in multiple places.
+- Increases risk of inconsistencies and maintenance effort.
+
+4. Valid Code
+- Uses a single method to handle all printing logic.
+- Follows the DRY principle by removing redundancy.
+- Easier to maintain, update, and extend.
