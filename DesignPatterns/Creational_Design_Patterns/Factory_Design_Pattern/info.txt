@@ -1,0 +1,30 @@
+Factory Pattern - Detailed Description
+---------------------------------------
+
+1. Overview
+-----------
+The Factory Pattern is a **creational design pattern** that provides an interface for creating objects in a superclass, but allows subclasses to alter the type of objects that will be created. 
+It encapsulates the object creation logic, promoting loose coupling between client code and the concrete classes it needs to instantiate.
+
+2. Purpose
+----------
+- To centralize object creation logic.
+- To avoid exposing the instantiation logic to the client.
+- To make the system more scalable and maintainable when introducing new object types.
+
+3. Key Idea
+-----------
+Instead of calling a constructor directly (using `new`), the client calls a factory method.
+The factory method decides which subclass or specific implementation to return based on parameters or internal logic.
+
+4. Advantages
+-------------
+- Promotes loose coupling between client and product classes.
+- Makes it easy to introduce new types without modifying existing client code.
+- Centralizes creation logic for easier maintenance.
+
+5. When to Use
+--------------
+- When the exact type of object to create is determined at runtime.
+- When the creation process is complex or involves multiple steps.
+- When you want to decouple client code from the concrete classes it uses.
