@@ -1,0 +1,32 @@
+
+Builder Design Pattern - Summary
+================================
+
+Definition:
+-----------
+The Builder Pattern is a creational design pattern that lets you construct complex objects step-by-step.
+It separates the object creation process from its final representation.
+
+Purpose:
+--------
+- To avoid telescoping constructors (constructors with many parameters).
+- To make object creation readable and flexible.
+- To allow creating different variations of an object with the same construction process.
+
+Key Elements:
+-------------
+1. **Product** - The object being built.
+2. **Builder** - Defines methods for configuring the product.
+3. **ConcreteBuilder** - Implements builder methods and returns the product.
+4. **Client** - Uses the builder to create objects.
+
+Advantages:
+-----------
+- Improves code readability and maintainability.
+- Allows step-by-step object creation.
+- Makes it easy to create immutable objects.
+
+Typical Usage:
+--------------
+- When an object has many optional parameters.
+- When object creation involves multiple steps.
