@@ -1,0 +1,38 @@
+Prototype Design Pattern - 
+---------------------------
+
+1. Definition:
+   The Prototype Design Pattern is a creational design pattern that allows you to create new objects by copying (cloning) existing objects, instead of creating them from scratch using constructors.
+
+2. Intent:
+   - To reduce the cost of creating complex objects repeatedly.
+   - To avoid subclassing by letting you clone existing prototypes.
+   - To provide flexibility in creating objects at runtime.
+
+3. Key Idea:
+   - Keep a prototype (an original object).
+   - When a new object is needed, clone the prototype instead of instantiating a new one.
+
+4. Participants:
+   - Prototype (Interface or Abstract class defining clone())
+   - ConcretePrototype (Implements the clone method)
+   - Client (Uses the prototype to create new objects by cloning)
+
+5. Benefits:
+   - Speeds up object creation.
+   - Avoids redundant initialization code.
+   - Makes it easier to add/remove object types at runtime.
+   - Reduces subclassing.
+
+6. Example (Game Characters):
+   - A default "Character" acts as the prototype.
+   - When a new character is needed (e.g., Warrior, Mage), we clone the prototype and modify only the required attributes.
+
+7. When to Use:
+   - When object creation is expensive or complex.
+   - When you want to avoid building objects from scratch repeatedly.
+   - When you need to keep different variations of an object.
+
+In summary:
+Instead of creating objects using 'new', Prototype lets you clone an existing object and modify it. 
+This makes object creation flexible, efficient, and consistent.
