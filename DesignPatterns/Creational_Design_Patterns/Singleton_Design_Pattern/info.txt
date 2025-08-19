@@ -1,0 +1,14 @@
+Singleton Design Pattern -:
+
+1> Singleton Pattern allows us to create just one instance of a class.
+
+2> It allows you to create only one instance of a class and ensures that all parts of your application use that same instance.
+
+THE PROBLEM WITH MULTIPLE INSTANCE OF A CLASS -:
+
+- When we create multiple instance of same class again and again we consume unnecessary memory 
+- Creating multiple instances of same class that does same work makes no sense 
+- Thats where we use Singlepattern comes in 
+- It makes default constuctor private and create instance using another function 
+  that checks if the instance is created or not if its created it return the already created one
+  else it creates a new one.
