@@ -1,0 +1,39 @@
+Strategy Design Pattern - 
+
+Definition:
+The Strategy Pattern is a behavioral design pattern that defines a family of algorithms (strategies),
+encapsulates each one, and makes them interchangeable. The client can switch between different algorithms
+at runtime without modifying the context class.
+
+When to Use:
+- When you have multiple algorithms/behaviors for a task (e.g., different payment methods).
+- When you want to switch algorithms dynamically at runtime.
+- When you want to avoid long if-else or switch-case statements.
+- When you want to follow the Open/Closed Principle (add new strategies without changing existing code).
+- When you want to reduce code duplication and keep algorithms isolated.
+
+When NOT to Use:
+- When there is only one fixed algorithm.
+- When algorithms never change at runtime.
+- When introducing strategy classes will overcomplicate the design.
+
+Advantages:
+- Promotes flexibility by allowing behavior to be selected at runtime.
+- Follows Open/Closed Principle (easy to add new strategies).
+- Reduces code duplication.
+- Makes code cleaner by removing conditional statements.
+
+Disadvantages:
+- Increases the number of classes in the system.
+- The client must be aware of different strategies to choose the right one.
+
+Real-World Examples:
+- Payment processing (CreditCard, DebitCard, Crypto, UPI).
+- Compression algorithms (ZIP, RAR, TAR).
+- Sorting algorithms (QuickSort, MergeSort, HeapSort).
+- Travel navigation routes (Car, Bike, Walk).
+- Authentication strategies (OAuth, JWT, SAML).
+
+Summary:
+Use Strategy Pattern when you need different interchangeable behaviors for the same task,
+and you want to switch between them dynamically without cluttering the code with conditionals.
