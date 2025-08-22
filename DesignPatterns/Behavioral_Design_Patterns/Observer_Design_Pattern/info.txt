@@ -1,0 +1,45 @@
+
+Observer Design Pattern
+-----------------------
+
+Definition:
+The Observer Pattern defines a one-to-many dependency between objects so that when one object (the Subject) 
+changes state, all its dependents (Observers) are notified and updated automatically.
+
+Key Components:
+1. Subject (Publisher):
+   - Maintains a list of observers.
+   - Provides methods to attach/detach observers.
+   - Notifies all observers when its state changes.
+
+2. Observer (Subscriber):
+   - Defines an interface with an update() method.
+   - Gets notified by the Subject when a change occurs.
+   - Reacts accordingly.
+
+3. Concrete Subject:
+   - Implements the Subject interface.
+   - Holds state and triggers notifications.
+
+4. Concrete Observer:
+   - Implements the Observer interface.
+   - Defines a specific reaction to updates from the Subject.
+
+When to Use:
+- When multiple objects need to be notified automatically of changes in another object.
+- To achieve loose coupling between objects (Subject does not need to know details of Observers).
+- When you have an event-driven system (e.g., GUI listeners, notification systems).
+- Common examples: Publish/Subscribe systems, GUI frameworks, event handling, messaging systems.
+
+Advantages:
+- Promotes loose coupling between Subject and Observers.
+- Supports broadcast communication (one Subject to many Observers).
+- Easy to add new observers without modifying existing code.
+
+Drawbacks:
+- Can lead to unexpected updates if there are too many observers.
+- Risk of memory leaks if observers are not properly removed.
+
+Example:
+- A YouTube Channel (Subject) notifies its Subscribers (Observers) whenever a new video is uploaded.
+
