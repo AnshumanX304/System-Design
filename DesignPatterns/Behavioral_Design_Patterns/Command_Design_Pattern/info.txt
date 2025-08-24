@@ -1,0 +1,41 @@
+Command Design Pattern - Generalised Explanation
+
+Definition:
+The Command Pattern is a behavioral design pattern that encapsulates a request (operation)
+as an object. This allows parameterizing objects with different requests, queuing or logging
+requests, and supporting undo/redo functionality.
+
+When to Use:
+- When you want to decouple the object that invokes an operation (Invoker) from the object that performs it (Receiver).
+- When you need to support undo/redo operations.
+- When you want to queue, log, or schedule requests as objects.
+- When you want to encapsulate operations as standalone objects for flexibility.
+
+Key Participants:
+1. Command (interface) - Declares an abstract method execute().
+2. ConcreteCommand - Implements the Command interface and calls the appropriate method on the Receiver.
+3. Receiver - The actual object that performs the work.
+4. Invoker - Holds a command and triggers it when required.
+5. Client - Creates the command, sets the receiver, and assigns it to the invoker.
+
+Advantages:
+- Decouples the invoker from the receiver.
+- Supports undo/redo functionality.
+- Easy to add new commands without modifying existing code (Open/Closed Principle).
+- Commands can be parameterized, queued, logged, or scheduled.
+- Improves flexibility and reusability.
+
+Disadvantages:
+- Increases the number of classes (one per command).
+- Simple scenarios might be over-engineered with this pattern.
+
+Real-World Examples:
+- Remote controls (each button press is a command).
+- GUI buttons and menu items (each action is encapsulated in a command object).
+- Task scheduling systems (queueing commands for execution).
+- Transaction management systems (supporting undo/redo).
+
+Summary:
+The Command Pattern encapsulates requests as objects, making it easy to parameterize invokers with different actions,
+queue them, support undo/redo, and decouple senders from receivers. It is particularly powerful when commands need
+to be dynamically set, logged, or undone/redone.
