@@ -1,0 +1,33 @@
+Mediator Design Pattern - Core Concept
+
+1. Problem it Solves:
+   - Many objects need to communicate with each other.
+   - Direct communication creates a web of dependencies (spaghetti code).
+   - Hard to maintain, extend, or modify.
+
+2. Core Concept:
+   - Introduces a central object (Mediator) that handles communication.
+   - Colleagues (objects) don’t talk to each other directly, only to the Mediator.
+   - Mediator decides how requests/messages are routed.
+
+3. Structure:
+   - Mediator (interface/abstract class): declares communication methods.
+   - Concrete Mediator: implements coordination logic between colleagues.
+   - Colleagues: objects that reference the mediator and communicate only through it.
+
+4. Example (Auction System):
+   - Mediator = AuctionHouse
+   - Colleagues = Bidders
+   - Bidder places a bid → informs AuctionHouse → AuctionHouse notifies other bidders.
+
+5. Key Benefits:
+   - Reduces coupling: colleagues know only the mediator, not each other.
+   - Centralized control: easy to change communication rules.
+   - Flexibility: add/remove colleagues without affecting others.
+
+6. Trade-offs:
+   - Mediator can become very complex (God object) if it takes too much logic.
+
+7. One-liner Definition:
+   - The Mediator Pattern centralizes communication between objects, so they don’t need to know about each other, only the mediator.
+
