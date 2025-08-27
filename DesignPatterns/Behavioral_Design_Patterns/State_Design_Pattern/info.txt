@@ -1,0 +1,30 @@
+State Design Pattern - 
+----------------------
+
+1. Definition:
+   - The State Pattern allows an object to change its behavior when its internal state changes.
+   - It removes complex if-else or switch-case conditions by encapsulating state-specific logic into separate classes.
+
+2. Participants:
+   - State: Interface or abstract class defining behavior methods (e.g., TrafficLightState).
+   - Concrete States: Classes implementing behavior for specific states (e.g., RedState, YellowState, GreenState).
+   - Context: Maintains a reference to the current state and delegates behavior to it (e.g., StateContext).
+
+3. Key Features:
+   - Encapsulation: Each state has its own class with its own logic.
+   - No Big Conditionals: Avoids large if-else/switch blocks for handling states.
+   - State Transitions: Each state decides what the next state should be.
+   - Open/Closed Principle: Easy to add new states without changing existing code.
+   - Runtime Behavior Change: Object’s behavior changes automatically as the state changes.
+
+4. When to Use:
+   - When an object’s behavior depends on its state.
+   - When you need clean state transitions without conditionals.
+   - Examples: 
+     - Traffic lights (Red → Yellow → Green)
+     - Vending machine (HasMoney → Dispensing → OutOfStock)
+     - Media player (Playing → Paused → Stopped)
+
+Summary:
+The State Pattern helps in writing cleaner, more maintainable code by organizing state-dependent behavior 
+into separate classes, making the system easier to extend and modify.
