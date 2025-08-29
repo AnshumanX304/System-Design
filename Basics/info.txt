@@ -52,3 +52,70 @@
         Place each A.java file in its own package (namespace), like:
         package Basics.one;
         package Basics.two;
+
+
+ABSTRACT CLASSES -: 
+-------------------
+
+    1. Abstract Class
+        - Declared with the 'abstract' keyword.
+        - Cannot be instantiated directly.
+        - Serves as a base class for other classes.
+        - Can contain:
+            * Abstract methods (no body).
+            * Concrete methods (with body).
+            * Fields, constructors, static methods.
+        - May include final methods that cannot be overridden.
+
+    2. Abstract Methods
+        - Declared using the 'abstract' keyword and end with a semicolon.
+        - Have no implementation (no body) in the abstract class.
+        - Must be implemented by the first concrete subclass.
+        - Example:
+            abstract void draw();
+
+    3. Rules
+        - If a class has even one abstract method, the class must be abstract.
+        - An abstract class may have zero abstract methods (still valid).
+        - A non-abstract subclass must override all abstract methods of its parent.
+        - If not, the subclass must also be declared abstract.
+
+    4. Overriding
+        - Abstract methods: Must be overridden by concrete subclasses.
+        - Concrete methods: Can optionally be overridden in subclasses.
+        - Rules of overriding apply (same signature, covariant return, non-restrictive access modifier).
+
+    5. Abstract Class vs Interface
+        - Abstract Class:
+            * Can have both abstract and concrete methods.
+            * Can have fields (instance variables).
+            * Single inheritance only (a class can extend one abstract class).
+        - Interface:
+            * Methods are abstract by default (until Java 8+ added default/static methods).
+            * Cannot have instance fields (only constants).
+            * Multiple inheritance supported (a class can implement multiple interfaces).
+
+    6. Use Cases of Abstract Classes
+        - When you want to share code among related classes.
+        - When you want to define a template and enforce subclasses to implement specific behavior.
+        - When some methods should have a common implementation, while others should be left for subclasses.
+
+    7. Example
+        abstract class Animal {
+            abstract void makeSound(); // abstract method
+            void eat() {               // concrete method
+                System.out.println("Eating...");
+            }
+        }
+
+        class Dog extends Animal {
+            @Override
+            void makeSound() {
+                System.out.println("Bark");
+            }
+        }
+
+    8. Key Takeaways
+        - Abstract methods: like interface methods, force implementation in subclasses.
+        - Abstract class: mix of template + partial implementation.
+        - Non-abstract subclasses MUST override abstract methods, but can choose to override concrete methods.
