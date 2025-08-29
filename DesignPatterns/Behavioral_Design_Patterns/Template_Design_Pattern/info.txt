@@ -1,0 +1,48 @@
+Template Method Design Pattern -:
+---------------------------------
+
+Definition:
+The Template Method Pattern defines the skeleton of an algorithm in an abstract class, 
+allowing subclasses to redefine specific steps without changing the overall structure of the algorithm.
+
+Key Components:
+1. Abstract Class (Template):
+   - Defines the template method (final) that contains the skeleton of the algorithm.
+   - Provides concrete methods for common steps shared across all subclasses.
+   - Declares abstract methods for steps that subclasses must implement.
+   - May include hook methods that subclasses can optionally override.
+
+2. Template Method:
+   - A final method that defines the sequence of steps in the algorithm.
+   - Calls both concrete and abstract methods in a specific order.
+   - Ensures the overall algorithm structure cannot be altered by subclasses.
+
+3. Abstract Methods:
+   - Declared in the abstract class but implemented by subclasses.
+   - Represent the customizable steps of the algorithm.
+   - Ensure subclasses provide their own behavior for these steps.
+
+4. Concrete Methods:
+   - Fully implemented in the abstract class.
+   - Represent common steps of the algorithm that remain the same for all subclasses.
+
+5. Hook Methods:
+   - Methods in the abstract class with default (usually empty or simple) implementations.
+   - Subclasses may override them to add or modify behavior.
+   - Provide flexibility without forcing subclasses to implement them.
+
+6. Concrete Classes:
+   - Extend the abstract class and implement the abstract methods.
+   - Provide specific implementations for customizable parts of the algorithm.
+   - May override hook methods to alter optional behavior.
+
+Benefits:
+- Promotes code reuse by capturing common algorithm structure in the abstract class.
+- Provides flexibility for subclasses to customize only specific steps.
+- Keeps the algorithm’s structure consistent and avoids duplication.
+- Introduces hooks for optional customization without forcing subclass changes.
+
+Use Cases:
+- When multiple classes share the same algorithm structure but differ in specific steps.
+- When you want to enforce a consistent process while still allowing some customization.
+
