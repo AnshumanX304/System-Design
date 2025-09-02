@@ -1,0 +1,34 @@
+Visitor Design Pattern
+======================
+
+Short Description
+-----------------
+The Visitor Design Pattern is a behavioral design pattern that lets you separate algorithms (operations) from the objects on which they operate. It allows adding new operations without modifying the object structure.
+
+Key Components
+--------------
+1. Element (Patient in example)
+   - An interface or abstract class with an `accept(Visitor visitor)` method.  
+   - Concrete implementations: `ChildPatient`, `AdultPatient`, `SeniorPatient`.  
+
+2. Visitor Interface
+   - Declares visit methods for each type of element (e.g., `visit(ChildPatient)`).  
+
+3. Concrete Visitors
+   - Implement the operations for different element types.  
+   - Example: `DiagnosisVisitor`, `BillingVisitor`.  
+
+4. Client
+   - Creates elements and visitors.  
+   - Makes each element accept different visitors to apply operations.
+
+When to Use
+-----------
+- When you need to perform multiple, unrelated operations on objects without polluting their classes with those operations.  
+- When the object structure is stable but operations on them are expected to change or grow.  
+- Common use cases:  
+  - Compilers (different passes like type checking, optimization, code generation)  
+  - Hospital management (diagnosis, billing, record-keeping for patients)  
+  - Object structure traversal (like applying actions on nodes of a tree).
+
+
