@@ -1,0 +1,44 @@
+Chain of Responsibility Design Pattern -
+----------------------------------------
+
+Definition:
+The Chain of Responsibility is a behavioral design pattern that lets you pass requests along a chain of handlers. 
+Each handler in the chain either processes the request or forwards it to the next handler.
+
+Key Components:
+1. Handler (Abstract class or interface)
+   - Declares a method for handling requests.
+   - Maintains a reference to the next handler.
+
+2. Concrete Handlers (e.g., TeamLead, Manager, Director)
+   - Decide whether to handle the request.
+   - If unable, pass the request to the next handler in the chain.
+
+3. Client
+   - Initiates the request and sends it to the first handler in the chain.
+
+Advantages:
+- Decouples sender and receiver.
+- Eliminates long if-else or switch-case blocks.
+- Flexible: easy to add, remove, or reorder handlers.
+
+Example:
+Leave approval system where requests move from TeamLead -> Manager -> Director.
+
+------------------------------------------------------
+
+Difference from State Design Pattern:
+
+1. Chain of Responsibility:
+   - Focus: "Who will handle this request?"
+   - Multiple handlers, but typically only one processes the request.
+   - Used for request delegation.
+
+2. State Pattern:
+   - Focus: "How should the object behave right now?"
+   - Same object behaves differently based on its internal state.
+   - Used for state-dependent behavior.
+
+Summary:
+- Chain of Responsibility = Request is passed along a chain until someone handles it.
+- State = An object’s behavior changes when its internal state changes.
