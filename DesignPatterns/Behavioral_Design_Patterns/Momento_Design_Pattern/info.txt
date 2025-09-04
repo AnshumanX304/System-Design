@@ -1,0 +1,59 @@
+Memento Design Pattern -
+------------------------
+
+Overview
+The Memento Pattern is a behavioral design pattern that allows you to capture and restore an object's state without exposing its internal implementation details.  
+It is mainly used to implement **undo/redo** functionality in applications such as text editors, games, IDEs, and graphics software.
+
+---
+
+Components
+
+1. **Memento (Snapshot)**
+   - Stores the internal state of the originator.
+   - Is immutable (read-only, no setters).
+   - Example: `Memento` class in the code.
+
+2. **Originator (The object whose state we save)**
+   - Creates and restores mementos.
+   - Knows how to save its current state and restore from a given memento.
+   - Example: `TextEditor` class.
+
+3. **Caretaker (History Manager)**
+   - Maintains a collection of mementos.
+   - Never modifies or inspects the contents of the memento.
+   - Responsible for keeping track of history and providing mementos when needed.
+   - Example: `EditorHistory` class.
+
+4. **Client**
+   - Uses originator, caretaker, and mementos together to perform save/restore operations.
+   - Example: `valid` class with `main` method.
+
+---
+
+## How It Works (Example Flow)
+1. Originator (`TextEditor`) changes state (`setText`).
+2. Originator creates a memento (`save`) and caretaker (`EditorHistory`) stores it.
+3. Later, caretaker can return a previous memento (`pop`) and originator restores it (`restore`).
+4. This provides **undo functionality**.
+
+---
+
+## Advantages
+- Provides an easy way to implement undo/redo.
+- Encapsulates the internal state (does not expose it to other objects).
+- Separates the concern of state storage from the object itself.
+
+## Disadvantages
+- Can consume a lot of memory if the state snapshots are large or too many.
+- Caretaker has to manage multiple mementos (history can grow large).
+
+---
+
+## Real-World Examples
+- Text editors (undo/redo typing).
+- Games (save checkpoints).
+- Photoshop/IDE (revert to previous changes).
+- Database transactions (rollback).
+
+---
