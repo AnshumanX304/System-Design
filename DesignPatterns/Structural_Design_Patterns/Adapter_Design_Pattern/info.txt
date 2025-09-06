@@ -1,0 +1,53 @@
+Adapter Design Pattern -:
+-------------------------
+
+1. Definition:
+   The Adapter Design Pattern is a structural design pattern that allows 
+   incompatible interfaces to work together. It acts as a bridge between 
+   two different interfaces by converting one interface into another that 
+   the client expects.
+
+2. Intent:
+   - To allow classes with incompatible interfaces to collaborate.
+   - To achieve reusability of existing classes without modifying their source code.
+
+3. Key Components:
+   - Target (Interface): The interface expected by the client (e.g., SmartDevice).
+   - Adaptee: The existing class that needs to be adapted (e.g., Airconditioner, SmartLight).
+   - Adapter: The class that implements the Target interface and translates 
+     the requests from the client to the Adaptee (e.g., AirconditionerAdapter, SmartLightAdapter).
+   - Client: The code that interacts with the Target interface (e.g., main method).
+
+4. Types of Adapters:
+   - Class Adapter: Uses inheritance to adapt one interface to another.
+   - Object Adapter: Uses composition (has-a relationship) to adapt the interface.
+
+5. Use Cases:
+   - Integrating legacy code with new systems without rewriting existing code.
+   - Connecting systems using third-party libraries that provide different interfaces.
+   - Allowing incompatible APIs (e.g., converting a USB port to an HDMI port in hardware analogy).
+   - Making two services or frameworks communicate seamlessly.
+
+6. Example:
+   Suppose we have devices like Airconditioner (works via Bluetooth) and SmartLight (works via Wi-Fi).
+   Both need to be controlled via a unified interface (SmartDevice). Using adapters, 
+   both devices can be turned on/off without the client needing to know their internal details.
+
+7. Advantages:
+   - Increases code reusability by adapting existing classes.
+   - Promotes loose coupling between client and adaptee.
+   - Makes it easy to add new types of adapters without changing client code.
+
+8. Disadvantages:
+   - Can add extra complexity if overused.
+   - May result in a large number of small adapter classes.
+
+9. Real-World Analogies:
+   - Power plug adapter (converting a 2-pin plug to a 3-pin socket).
+   - Card reader that acts as an adapter between memory cards and a laptop’s USB port.
+   - HDMI to VGA converter.
+
+Summary:
+The Adapter Design Pattern is about creating a middle layer (adapter) that 
+converts the interface of one class into another interface that clients expect, 
+enabling integration and reusability of incompatible systems.
