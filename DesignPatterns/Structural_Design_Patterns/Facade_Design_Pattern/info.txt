@@ -1,0 +1,40 @@
+
+Facade Design Pattern -
+-----------------------
+
+1. Definition:
+   - Structural design pattern that provides a simplified, unified interface
+     to a complex subsystem.
+
+2. Problem:
+   - Complex systems require multiple classes/method calls in specific order.
+   - Leads to tight coupling and messy client code.
+
+3. Solution:
+   - Introduce a Facade class as a single entry point.
+   - Facade hides subsystem complexity and exposes only needed functionality.
+
+4. Components:
+   - Subsystem Classes: Actual complex classes (e.g., MusicPlayer, VideoPlayer).
+   - Facade: Simplifies interaction (e.g., MediaFacade).
+   - Client: Uses only the Facade (no direct subsystem calls).
+
+5. Benefits:
+   - Simplifies client usage.
+   - Reduces coupling between client and subsystem.
+   - Improves maintainability and flexibility.
+   - Provides a single entry point to the system.
+
+6. Example (Your Code):
+   - MusicPlayer and VideoPlayer: Handle details.
+   - MediaFacade: Provides simple "playmusic" or "playvideo".
+   - Client: Just calls performAction("playmusic").
+
+7. Real-World Examples:
+   - OS Media Player (Play Video button triggers multiple operations).
+   - Banking System (transferMoney() hides account checks, notifications).
+   - Frameworks like Spring/Hibernate.
+
+---
+In short:
+Use Facade when you want to hide complex subsystems behind a simple interface.
