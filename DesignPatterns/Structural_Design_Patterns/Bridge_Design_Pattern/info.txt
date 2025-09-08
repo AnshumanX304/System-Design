@@ -1,0 +1,31 @@
+Bridge Design Pattern -
+-----------------------
+
+Intent -
+--------
+    Decouple abstraction (high-level control) from implementation (low-level details) so that both can vary independently.
+
+Structure -
+-----------
+    Abstraction (Car) defines high-level operations.
+    Implementation (Engine) defines low-level operations.
+    The abstraction holds a reference to the implementation (has-a).
+
+Use Case -
+----------
+    When you want to combine different abstractions with different implementations without an explosion of subclasses.
+
+Example -
+---------
+    Car types (Sedan, SUV, Hatchback) × Engine types (Diesel, Petrol, EV).
+
+Strategy Pattern vs Bridge Pattern (based on intent) -
+------------------------------------------------------
+ 
+    Strategy-
+    ---------
+        Encapsulates algorithms or behaviors and lets you swap them at runtime. Focus is on flexibility of choosing behavior.
+    Bridge-
+    -------
+        Separates abstraction from implementation so both can evolve independently. 
+        Focus is on avoiding subclass explosion.(cannot swap implementation in between)
