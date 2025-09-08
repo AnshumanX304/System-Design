@@ -1,0 +1,30 @@
+Decorator Pattern
+
+Common Interface
+    We start with a common interface that defines the contract (e.g., ICharacter).
+    A concrete class (e.g., Mario) implements this interface, providing the base behavior.
+
+Base Object
+    The concrete class object has all the properties and behaviors defined by the interface.
+    Example: A plain Mario can return its default abilities.
+
+Need for Extension
+    lly extend or modify the behavior of a class without altering its source code, we use the Decorator Pattern.
+
+Abstract Decorator
+
+    We create an abstract decorator class that also implements the same interface (is-a relationship).
+    This decorator class contains a reference to an object of the same interface type (has-a relationship).
+    The abstract decorator typically delegates interface methods to the wrapped object, but can leave them abstract for subclasses to define.
+    👉 So the abstract decorator:
+        is-a (implements the interface)
+        has-a (holds a reference of the interface)
+
+Concrete Decorators
+
+    Concrete decorators extend the abstract decorator.
+    Each concrete decorator:
+        Wraps an object of the interface type (can be a base object or another decorator).
+        Calls the wrapped object’s method(s).
+        Adds its own additional behavior before or after delegating.
+    👉 This allows stacking multiple decorators, each adding new responsibilities dynamically.
