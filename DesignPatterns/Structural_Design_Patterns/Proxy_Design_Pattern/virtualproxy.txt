@@ -1,0 +1,31 @@
+
+Virtual Proxy Pattern
+---------------------
+
+Definition:
+The Virtual Proxy Pattern is a structural design pattern where a proxy object controls access 
+to a resource that is expensive to create. The proxy delays the creation and initialization 
+of the real object until it is actually needed, enabling lazy loading and improving performance.
+
+Components:
+1. Subject (Interface):
+   - Defines the common interface for RealSubject and Proxy.
+   - Ensures Proxy can be used in place of the RealSubject.
+
+2. RealSubject (Real Object):
+   - The actual implementation of the Subject.
+   - Represents the resource that is expensive to create or initialize.
+   - Performs the core operations (e.g., loading, rendering, or heavy computation).
+
+3. Proxy:
+   - Implements the same interface as the RealSubject.
+   - Maintains a reference to the RealSubject.
+   - Controls access to the RealSubject, instantiating it lazily when needed.
+
+4. Client:
+   - Interacts with the Subject interface.
+   - Can use Proxy or RealSubject interchangeably without being aware of which one it is using.
+
+Key Use Case:
+- Deferring creation of an expensive object until it is needed (lazy initialization).
+- Examples: loading images in GUI applications, loading large datasets, or initializing remote connections.
