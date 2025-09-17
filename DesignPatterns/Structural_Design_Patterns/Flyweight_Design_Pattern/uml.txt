@@ -1,0 +1,51 @@
+                   ┌─────────────────────┐
+                   │   AsteroidFlyweight │  <<Flyweight>>
+                   ├─────────────────────┤
+                   │ - height: int       │
+                   │ - weight: int       │
+                   │ - color: String     │
+                   │ - texture: String   │
+                   │ - material: String  │
+                   ├─────────────────────┤
+                   │ + getSize(): int    │
+                   │ + render(...)       │
+                   └─────────────────────┘
+
+                           ▲
+                           │ (shared reference) (has a)
+                           │
+                   ┌─────────────────────┐
+                   │   AsteroidContext   │  <<Context>>
+                   ├─────────────────────┤
+                   │ - flyweight:        │
+                   │     AsteroidFlyweight│
+                   │ - posx: int         │
+                   │ - posy: int         │
+                   │ - velocityx: int    │
+                   │ - velocityy: int    │
+                   ├─────────────────────┤
+                   │ + draw(): void      │
+                   └─────────────────────┘
+
+
+                   ┌────────────────────────────┐
+                   │      AsteroidFactory       │  <<Factory>>
+                   ├────────────────────────────┤
+                   │ - asteroidMap:             │
+                   │     Map<String,AsteroidFlyweight> │
+                   ├────────────────────────────┤
+                   │ + getAsteroid(...):        │
+                   │       AsteroidFlyweight    │
+                   │ + getPoolSize(): int       │
+                   └────────────────────────────┘
+
+
+                   ┌─────────────────────┐
+                   │  SpaceGameAsteroid  │  <<Client>>
+                   ├─────────────────────┤
+                   │ - asteroids:        │
+                   │     List<AsteroidContext> │
+                   ├─────────────────────┤
+                   │ + spawnAsteroids(count:int)│
+                   │ + render(): void    │
+                   └─────────────────────┘

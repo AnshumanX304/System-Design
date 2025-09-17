@@ -1,0 +1,48 @@
+Flyweight Design Pattern - Summary
+----------------------------------
+
+1. Intent:
+   - The Flyweight pattern is used to minimize memory usage by sharing as much data as possible with similar objects.
+   - It separates intrinsic state (shared) from extrinsic state (unique).
+
+2. Key Concepts:
+   - Intrinsic State:
+     * Information that is independent of the object’s context.
+     * Stored in the Flyweight object and shared across contexts.
+     * Example: color, material, texture of an asteroid.
+
+   - Extrinsic State:
+     * Information that depends on the context, cannot be shared.
+     * Passed in or stored outside the Flyweight.
+     * Example: position and velocity of an asteroid.
+
+3. Structure:
+   - Flyweight: The shared object containing intrinsic state.
+   - Context: Maintains extrinsic state and references a Flyweight.
+   - Flyweight Factory: Creates and manages Flyweights, ensures reuse instead of duplicate creation.
+
+4. When to Use:
+   - When you have a large number of similar objects.
+   - When object creation and memory usage are expensive.
+   - When most object data can be made external and shared.
+
+5. Benefits:
+   - Reduced memory usage.
+   - Better performance in systems with many repeated objects.
+
+6. Trade-offs:
+   - Increases complexity because you must manage extrinsic state separately.
+   - Context must supply external data every time an operation is performed.
+
+7. Example (Asteroids in a Game):
+   - Flyweight: stores shared asteroid data (size, color, texture, material).
+   - Context: stores unique asteroid data (position, velocity).
+   - Factory: ensures only one flyweight per combination of intrinsic data.
+
+8. Real-World Analogies:
+   - Characters in a text editor: font, style shared (intrinsic), position different (extrinsic).
+   - Trees in a forest in a game: species shared, location unique.
+
+9. Summary:
+   - Flyweight is about sharing immutable, reusable data across many objects.
+   - Key is to balance what is intrinsic (shared) vs extrinsic (per-instance).
