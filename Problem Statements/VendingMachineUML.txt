@@ -1,0 +1,61 @@
+-------------------------------------------
+|          VendingMachineState            |  <<abstract>>
+-------------------------------------------
+| +insert_coin(vm: VendingMachine, coins: vector<int>) : VendingMachineState*
+| +return_coin(vm: VendingMachine) : VendingMachineState*
+| +select_item(vm: VendingMachine, code: string, qty: int) : VendingMachineState*
+| +dispense_item(vm: VendingMachine) : VendingMachineState*
+| +refill_item(vm: VendingMachine, iteminfo: vector<ItemInfo>) : VendingMachineState*
+-------------------------------------------
+
+                 /_\
+                  |
+    ---------------------------------------
+    |                 |                   |
+InsertCoinState   HasCoinState   DispenseItemState   OutofStockState
+------------------------------------------- (all inherit VendingMachineState)
+| +instance() : static reference         |
+| +override all VendingMachineState methods |
+-------------------------------------------
+
+-------------------------------------------
+|               ItemInfo                  |
+-------------------------------------------
+| -code: string                           |
+| -name: string                           |
+| -price: int                             |
+| -qty: int                               |
+-------------------------------------------
+
+-------------------------------------------
+|           TransactionContext            |
+-------------------------------------------
+| -code: string                           |
+| -targetQty: int                         |
+| -currcoins: vector<int>                 |
+-------------------------------------------
+
+-------------------------------------------
+|             VendingMachine              |
+-------------------------------------------
+| -currState: VendingMachineState*        |
+| -iteminfoMap: map<string, ItemInfo*>    |
+| -currContext: TransactionContext*       |
+| -storedCoins: vector<int>               |
+-------------------------------------------
+| +insert_coin(coins: vector<int>)        |
+| +return_coin()                          |
+| +select_item(code: string, qty: int)    |
+| +dispense_item()                        |
+| +refill_item(items: vector<ItemInfo>)   |
+| +add_coins(coins: vector<int>) : int    |
+| +check_and_delete_iteminfomap(key: string) |
+| +add_item_info_map(key: string, value: ItemInfo*) |
+| +get_currcontext_coins() : int          |
+| +clear_currcontext_coins()              |
+| +get_item_by_key(key: string) : ItemInfo* |
+| +setCodeQtyContext(code: string, qty: int) |
+| +check_empty_map() : bool               |
+| +decreaseProductQty(code: string, todec: int) |
+| +getCurrContext() : TransactionContext* |
+-------------------------------------------
