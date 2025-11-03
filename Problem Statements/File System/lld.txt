@@ -1,0 +1,45 @@
+                         ┌──────────────────────────────┐
+                         │          FileSystem          │
+                         ├──────────────────────────────┤
+                         │ - root: Directory            │
+                         │ - currentDir: Directory      │
+                         ├──────────────────────────────┤
+                         │ + mkdir(path: String): void  │
+                         │ + addContentToFile(path: String, content: String): void │
+                         │ + readContentFromFile(path: String): String │
+                         │ + ls(path: String): List<String> │
+                         │ + cd(path: String): void       │
+                         │ - resolvePath(path: String): List<String> │
+                         │ - navigateToDir(parts: List<String>, createMissing: boolean): Directory │
+                         │ - getFullPath(dir: Directory): String │
+                         └──────────────────────────────┘
+                                        │
+                                        │ has-a (root, currentDir)
+                                        ▼
+                         ┌──────────────────────────────---┐
+                         │     FileSystemEntity (abstract) │
+                         ├──────────────────────────────---┤
+                         │ # name: String                  │
+                         ├──────────────────────────────---┤
+                         │ + getName(): String             │
+                         │ + ls(): List<String> (abstract) │
+                         └───────────────┬───────────────--┘
+                                         │
+            ┌────────────────────────────┼─────────────────────────────┐
+            │                                                          │
+            ▼                                                          ▼
+┌──────────────────────────────┐                      ┌──────────────────────────────┐
+│          Directory           │                      │          FileEntity          │
+├──────────────────────────────┤                      ├──────────────────────────────┤
+│ - children: Map<String, FileSystemEntity> │          │ - content: StringBuilder    │
+├──────────────────────────────┤                      ├──────────────────────────────┤
+│ + add(entity: FileSystemEntity): void    │           │ + addContent(data: String): void │
+│ + getChild(name: String): FileSystemEntity │         │ + readContent(): String      │
+│ + contains(name: String): boolean        │           │ + ls(): List<String>         │
+│ + ls(): List<String>                     │           └──────────────────────────────┘
+└──────────────────────────────┘
+          ▲
+          │
+          │ contains (composite relation)
+          │
+          └────────── references multiple FileSystemEntity (File / Directory)
