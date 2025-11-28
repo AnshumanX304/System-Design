@@ -43,3 +43,48 @@
           │ contains (composite relation)
           │
           └────────── references multiple FileSystemEntity (File / Directory)
+
+
+
+Task Description -:
+  Given an input SQL query, a target schema name, a datasource type, and an optional run ID (which will be a UUID), rewrite the SQL query strictly according to the following transformation rules.
+  
+TABLE REWRITING RULES -:
+  - Identify every table reference in the query (in FROM, JOIN, UPDATE, DELETE, or INSERT clauses).
+    • Do NOT alter aliases.
+    • Do NOT alter column names, expressions, conditions, or joins.
+  - For each table name:
+    a. If it already includes a schema (e.g., dbo.table_name), replace the schema with the provided target schema.
+    b. If it does not include a schema, prepend the target schema to the table name.
+  - Rename the table depending on whether a run_id is provided:
+    • If run_id IS PROVIDED:
+      → Append the run_id (UUID without hyphens) as a suffix to the table name
+      → Format: target_schema.table_<run_id>
+    • If run_id IS NOT PROVIDED:
+      → Remove any existing UUID or random suffix from the table name
+      → Format: target_schema.table_name
+
+QUOTING RULES BY DATASOURCE -:
+  Apply the appropriate quoting convention for schema and table names:
+  - PostgreSQL, Snowflake, Redshift → "schema"."table"
+  - MySQL → schema.table
+  - SQL Server → [schema].[table]
+  - BigQuery → schema.table
+
+OUTPUT REQUIREMENTS -:
+  - Preserve aliases exactly as in the input query.
+  - Preserve the structure, spacing, and logic of the original SQL (joins, subqueries, conditions, etc.).
+  - Only modify schema-qualified table references as per the above rules.
+  - Do not introduce or remove any aliases.
+  - Do not add or remove any columns or expressions.
+  - Do not add a semicolon at the end of the query and keep the query a safe select query if applicable.
+
+INPUT VARIABLES -:
+  Input SQL Query: {{sql_query}}
+  Target Schema: {{schema_name}}
+  Datasource Type: {{datasource_type}}
+  Run ID (optional): {{run_id}}
+
+OUTPUT FORMAT -:
+  Return only the fully rewritten SQL query.
+  Do not include explanations, comments, or markdown formatting.
