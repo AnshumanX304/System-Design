@@ -14,5 +14,5 @@ class TokenBucketConfig:
 
 @dataclass
 class LeakyBucketConfig:
-    curr_capacity: int
+    curr_capacity: float
     last_leaked: datetime.datetime
