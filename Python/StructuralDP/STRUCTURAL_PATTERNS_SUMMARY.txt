@@ -1,0 +1,362 @@
+================================================================================
+                 STRUCTURAL DESIGN PATTERNS  -  REVISION NOTES
+                 Folder: StructuralDP/
+================================================================================
+
+Structural patterns answer ONE question:
+        "How do I COMPOSE / CONNECT classes and objects into bigger structures?"
+
+  PATTERN        FILE                YOUR EXAMPLE
+  -------------  ------------------  -------------------------------------------
+  Adapter        adapterdp.py        AC & SmartLight made to fit SmartDevice
+  Bridge         bridgedp.py         Message TYPE  x  delivery CHANNEL
+  Composite      compositedp.py      Folder size = sum of files + sub-folders
+  Decorator      decoratordp.py      Mario + power-ups (height, gun, speed)
+  Facade         facadedp.py         One MediaFacade for music & video
+  Flyweight      flyweightdp.py      Shared letter objects ("A", Arial, 12)
+  Virtual Proxy  virtualproxydp.py   Image loaded only on first display()
+
+Each section below: ONE-LINER -> YOUR EXAMPLE -> HOW IT WORKS -> OUTPUT ->
+WHY / KEY POINTS -> RECALL CUE.
+
+
+================================================================================
+1. ADAPTER                                                  file: adapterdp.py
+================================================================================
+ONE-LINER
+  Convert an existing, incompatible interface into the interface the client
+  expects.
+  (Your note: "acts as a bridge that converts an existing incompatible
+   interface into the interface expected by the client.")
+
+YOUR EXAMPLE: smart home devices
+  The client wants every device to speak ONE simple language:
+      SmartDevice:   turnon(), turnoff()
+
+  But the real devices have their own, more complicated API:
+      AirConditioner / SmartLight:
+          connectBluetooth(), turnon(), turnoff(), disconnectBluetooth()
+  You have to connect over Bluetooth before switching on and disconnect after
+  switching off.
+
+  The adapters hide that sequence:
+      ACAdapter.turnon()   -> ac.connectBluetooth()  then  ac.turnon()
+      ACAdapter.turnoff()  -> ac.turnoff()           then  ac.disconnectBluetooth()
+      SLAdapter            -> the same, for SmartLight
+
+ROLES
+  Target  (what the client expects) -> SmartDevice
+  Adaptee (existing class)          -> AirConditioner, SmartLight
+  Adapter                           -> ACAdapter, SLAdapter
+                                       IS-A SmartDevice, HAS-A adaptee
+                                       (self.ac = AirConditioner())
+  Client                            -> __main__ (only calls turnon/turnoff)
+
+OUTPUT (AC part; SmartLight prints the same with "SL")
+  Ac connected via bluetooth !
+  Ac turned on !
+  Ac turned off !
+  Ac disconnected via bluetooth !
+
+KEY POINTS
+  - The adaptee classes are NOT modified. The adapter wraps them
+    (composition).
+  - Typical use: plugging legacy code or 3rd-party libraries into your app.
+
+SMALL NOTE
+  In SmartDevice only turnon() has @abstractmethod. Put it on turnoff() too,
+  so every adapter is forced to implement it.
+
+RECALL CUE
+  A travel plug adapter: your charger doesn't fit the foreign socket, and the
+  adapter makes it fit. Here a Bluetooth device is made to fit a simple
+  on/off switch.
+
+
+================================================================================
+2. BRIDGE                                                    file: bridgedp.py
+================================================================================
+ONE-LINER
+  Separate WHAT an object does (abstraction) from HOW it does it
+  (implementation), and connect the two with composition so both can grow
+  independently.
+
+YOUR EXAMPLE: notifications
+  Two independent dimensions:
+    WHAT kind of message ->  NormalMessage, UrgentMessage, ScheduledMessage
+    HOW it is delivered  ->  SMSSender, EmailSender
+
+      MessageType (abstraction) ──has-a──▶ MessageSender (implementation)
+        ├── NormalMessage                    ├── SMSSender
+        ├── UrgentMessage                    └── EmailSender
+        └── ScheduledMessage
+
+  MessageType receives a MessageSender in its constructor. That stored
+  reference (self.message_sender) IS the bridge.
+
+      UrgentMessage(sms_sender).notify("Server is down!")
+        -> self.message_sender.send_message("Urgent Server is down!")
+        -> SMSSender: "message sent via SMS Urgent Server is down!"
+
+OUTPUT
+  message sent via Email Hello!
+  message sent via SMS Urgent Server is down!
+  message sent via SMS Scheduled Payment due!
+
+WHY: THE CLASS EXPLOSION PROBLEM
+  With plain inheritance you need one class per combination:
+      UrgentSMS, UrgentEmail, ScheduledSMS, ScheduledEmail, NormalSMS, ...
+      3 types x 2 senders = 6 classes. Add WhatsApp -> 9. Add Promo -> 12.
+  With Bridge: 3 + 2 = 5 classes. Add WhatsApp -> just 1 new class.
+
+RECALL CUE
+  Message TYPE x delivery CHANNEL, mixed and matched at runtime:
+      UrgentMessage(sms_sender), NormalMessage(email_sender)
+
+
+================================================================================
+3. COMPOSITE                                              file: compositedp.py
+================================================================================
+ONE-LINER
+  Treat single objects and groups of objects the SAME way by arranging them
+  in a recursive tree.
+
+YOUR EXAMPLE: file system size
+  FileSystem (interface): get_size()
+    ├── File    (LEAF)       returns its own size
+    └── Folder  (COMPOSITE)  holds a list of FileSystem items (files OR
+                             folders); get_size() = sum of the children's
+                             get_size()
+
+  The tree you built:
+      folder1
+       ├── file1_1   (10)
+       ├── file1_2   (20)
+       └── folder1_2
+            ├── file1_2_1 (30)
+            └── file1_2_2  (4)
+
+  folder1.get_size() = 10 + 20 + (30 + 4) = 64
+
+OUTPUT
+  64
+
+KEY POINTS
+  - A Folder doesn't care whether a child is a File or another Folder. It
+    just calls get_size(), and the recursion happens on its own.
+  - The client calls ONE method on the root and gets the answer for the
+    whole tree.
+  - Folder.components is typed list[FileSystem], i.e. the interface, not File.
+
+REAL-WORLD USES
+  File systems, org charts (manager -> employees), UI component trees,
+  menus with sub-menus.
+
+RECALL CUE
+  "How big is this folder?" The folder asks each child, and child folders
+  ask their own children.
+
+
+================================================================================
+4. DECORATOR                                              file: decoratordp.py
+================================================================================
+ONE-LINER
+  Wrap an object in other objects that share its interface, to ADD behaviour
+  at runtime without changing the original class.
+
+YOUR EXAMPLE: Mario power-ups
+  ICharacter (interface): get_abilities()
+    ├── Mario                    "I am a normal Mario"   (the real object)
+    └── CharacterDecorator       HAS-A ICharacter  (self.character)
+          ├── HeightUpDecorator  + " with heightup,"
+          ├── GunupDecorator     + " with gun,"
+          └── SpeedupDecorator   + " with speedup,"
+
+  A decorator IS-A ICharacter (same interface) AND HAS-A ICharacter (it wraps
+  one). That double relationship is the whole pattern.
+
+STEP 1: WRAPPING (no get_abilities() is called yet!)
+  mario = Mario()
+  mario = HeightUpDecorator(mario)
+  mario = GunupDecorator(mario)
+  mario = SpeedupDecorator(mario)
+
+  Like Russian dolls:   Speedup( Gunup( HeightUp( Mario ) ) )
+
+STEP 2: CALLING (the call goes IN, results come back OUT)
+  Speedup.get_abilities()
+    -> Gunup.get_abilities()
+         -> HeightUp.get_abilities()
+              -> Mario.get_abilities()   returns "I am a normal Mario"
+         <- + " with heightup,"
+    <- + " with gun,"
+  <- + " with speedup,"
+
+OUTPUT
+  I am a normal Mario with heightup, with gun, with speedup,
+
+WHY
+  - Avoids a subclass for every combination (MarioWithGunAndSpeed, ...).
+  - Stack any power-ups, in any order, at runtime.
+  - The Mario class never changes (Open/Closed Principle).
+
+RECALL CUE
+  Mario picks up power-ups one after another. Each one wraps him and adds an
+  ability, but underneath he is still Mario.
+
+
+================================================================================
+5. FACADE                                                    file: facadedp.py
+================================================================================
+ONE-LINER
+  Give clients one simple interface that hides the complexity of several
+  subsystems.
+
+YOUR EXAMPLE: media player
+  Subsystems (multi-step, complicated):
+    MusicPlayer : initialiseAudioDriver() -> decodeAudio() -> startPlayback()
+    VideoPlayer : setupRenderingEngine()  -> loadAudio()   -> playVideo()
+
+  Facade:
+    MediaFacade.performAction("playmusic")   runs the 3 music steps in order
+    MediaFacade.performAction("playvideo")   runs the 3 video steps in order
+    anything else                            "Unsupported action !"
+
+  The client knows ONE class and ONE method. MediaFacade keeps the subsystems
+  private (self.__videoplayer, self.__audioplayer).
+
+OUTPUT
+  The audio drivers are initialised !
+  The audio is being decoded !
+  The audio playback is started !
+  The video drivers are initialised !
+  The video is being loaded !
+  The video play is started !
+
+KEY POINTS
+  - A facade adds no new functionality. It only ORCHESTRATES existing pieces.
+  - The subsystems still exist; power users can call them directly.
+  - Lower coupling: the client depends on 1 facade instead of
+    2 players x 3 steps.
+
+RECALL CUE
+  A single "Play" button in a media app. Behind it: drivers, decoding,
+  rendering, playback.
+
+
+================================================================================
+6. FLYWEIGHT                                              file: flyweightdp.py
+================================================================================
+ONE-LINER
+  Share the common (INTRINSIC) state between many objects and pass the unique
+  (EXTRINSIC) state in from outside, to save memory.
+
+YOUR EXAMPLE: characters in a text document
+  A document has thousands of letters, and most of them share a
+  value + font + size.
+    INTRINSIC (shared, stored in the object) : value, font, size
+                                               e.g. ("A", "Arial", 12)
+    EXTRINSIC (unique, passed in each time)  : position -> display(x, y)
+
+  CharacterFactory keeps a cache (a dict):
+      key = (value, font, size)
+      if key not in self.characters:  create a Character and store it
+      return self.characters[key]
+
+  char1 = factory.get_character("A", "Arial", 12)   # created
+  char2 = factory.get_character("A", "Arial", 12)   # REUSED: same object
+  char3 = factory.get_character("B", "Arial", 12)   # created (new key)
+
+  char1.display(10, 20)
+  char2.display(30, 40)     # same object, drawn at a different position
+
+OUTPUT
+  A | Font: Arial | Size: 12 | Position: (10, 20)
+  A | Font: Arial | Size: 12 | Position: (30, 40)
+  B | Font: Arial | Size: 12 | Position: (50, 60)
+  True      <- char1 is char2
+  False     <- char1 is char3
+
+KEY POINTS
+  - The shared state must be IMMUTABLE. If one "A" changed its font, every
+    "A" in the document would change.
+  - Position is NOT stored in Character. Storing it would make sharing
+    impossible.
+  - The factory (cache) is what makes sharing work. Never call Character()
+    directly.
+
+RECALL CUE
+  A 10,000-letter document needs only one object per letter+font+size, and
+  each of those objects is drawn at many positions.
+
+
+================================================================================
+7. VIRTUAL PROXY                                      file: virtualproxydp.py
+================================================================================
+ONE-LINER
+  A lightweight stand-in that creates the expensive real object only when it
+  is first actually needed (lazy loading).
+
+YOUR EXAMPLE: images
+  Image (interface): display()
+    ├── RealImage   __init__ loads the file (EXPENSIVE!), display() shows it
+    └── ImageProxy  stores only the filename; real_image = None
+
+  ImageProxy.display():
+      if self.real_image is None:
+          self.real_image = RealImage(self.filename)   # load NOW, only once
+      self.real_image.display()
+
+  image1 = ImageProxy("a.png")   # nothing loaded yet: cheap
+  image1.display()               # first call: loads a.png, then displays
+  image1.display()               # (a second call would only display;
+                                 #  it is already loaded)
+
+OUTPUT
+  The image is being loaded a.png
+  The image is being displayed a.png
+  The image is being loaded b.png
+  The image is being displayed b.png
+
+KEY POINTS
+  - Proxy and RealImage implement the SAME interface, so the client can't
+    tell them apart.
+  - The proxy HAS-A RealImage and CONTROLS access to it (here: when it gets
+    created).
+  - Other proxy types: Protection proxy (permission check before the call),
+    Remote proxy (the real object lives on another machine), Caching proxy.
+
+RECALL CUE
+  Photo gallery thumbnails: the full-size image loads only when you open it.
+
+
+================================================================================
+CONFUSION CORNER: "THEY ALL WRAP SOMETHING", SO HOW DO YOU TELL THEM APART?
+================================================================================
+  Adapter    changes the INTERFACE (makes it fit)       AC -> SmartDevice
+  Decorator  same interface, ADDS behaviour, stackable  Mario + power-ups
+  Proxy      same interface, CONTROLS ACCESS            ImageProxy (lazy load)
+  Facade     NEW simpler interface over MANY classes    MediaFacade
+  Bridge     splits TWO dimensions, designed up front   MessageType x Sender
+  Composite  a tree; a group acts like a single item    Folder / File
+  Flyweight  SHARES objects to save memory              Character cache
+
+  Adapter vs Facade
+    Adapter : makes ONE incompatible interface fit the expected one.
+    Facade  : makes MANY complex interfaces look like ONE simple one.
+
+  Adapter vs Bridge
+    Adapter : a fix AFTER the fact, to make existing things work together.
+    Bridge  : a decision made BEFORE, to keep two hierarchies separate so
+              each can grow on its own.
+
+  Decorator vs Proxy (the code looks almost identical!)
+    Decorator : ADDS behaviour. The client builds the wrapping chain itself.
+    Proxy     : CONTROLS ACCESS (when or whether the real object is created
+                or called). The proxy usually creates and manages the real
+                object itself.
+
+  Flyweight vs Singleton
+    Singleton : ONE instance for the whole class.
+    Flyweight : ONE shared instance PER unique key.
+================================================================================

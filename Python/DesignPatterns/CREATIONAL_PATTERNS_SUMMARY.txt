@@ -1,0 +1,271 @@
+================================================================================
+                 CREATIONAL DESIGN PATTERNS  -  REVISION NOTES
+                 Folder: DesignPatterns/
+================================================================================
+
+Creational patterns answer ONE question:
+        "HOW should this object be CREATED?"
+
+  PATTERN     FILE           YOUR EXAMPLE                 REMEMBER IT AS
+  ----------  -------------  ---------------------------  ----------------------
+  Singleton   Singleton.py   Logger                       only ONE logger, ever
+  Factory     Factory.py     VehicleFactory -> Car / Bus  say "Car", get a Car
+  Builder     Builder.py     CarBuilder -> Car            build a car step by step
+  Prototype   Prototype.py   Game characters              clone default, tweak it
+
+Each section below: ONE-LINER -> YOUR EXAMPLE -> HOW IT WORKS -> OUTPUT ->
+WHY / KEY POINTS -> RECALL CUE.
+
+
+================================================================================
+1. SINGLETON                                               file: Singleton.py
+================================================================================
+ONE-LINER
+  Make sure a class has only ONE instance, and hand that same instance to
+  everyone who asks for it.
+
+YOUR EXAMPLE: the Logger
+  The whole app should share one Logger. However many times you write
+  Logger(), you always get back the very same object.
+
+HOW IT WORKS (the trick)
+  1. A CLASS variable remembers "the one instance":
+         _logger = None
+  2. Override __new__  (the method that CREATES objects; runs BEFORE __init__):
+
+         def __new__(cls):
+             if cls._logger is None:                 # first time?
+                 cls._logger = super().__new__(cls)  # create it ONCE
+             return cls._logger                      # always the same one
+
+FLOW
+  logger  = Logger()   __new__: _logger is None -> create, store, return it
+                       __init__ runs
+  logger2 = Logger()   __new__: _logger exists  -> return the SAME object
+                       __init__ runs AGAIN on that same object  (!)
+
+OUTPUT
+  Hello Simon, Go Back !! !
+  True      <- logger is logger2   (same object in memory)
+  True      <- logger.initialized
+  True      <- logger2.initialized (same object, so same attributes)
+
+PYTHON CONCEPTS LEARNED IN THIS FILE
+  __new__ vs __init__   __new__ CREATES the object (receives cls).
+                        __init__ INITIALISES the object (receives self).
+  cls vs self           cls = the class itself (Logger); self = one object.
+  Class variable        Belongs to the class, shared by all instances,
+                        exists even before any object is created.
+  super().__new__(cls)  Reuse Python's normal object creation (object.__new__).
+  `is`                  Identity check: same object in memory? (not ==)
+  if __name__ == "__main__":   runs only when the file is executed directly,
+                               not when it is imported.
+
+GOTCHA
+  __init__ runs on EVERY Logger() call. If __init__ reset some state (say, a
+  list of log lines), each Logger() call would wipe it. Guard it if needed:
+      def __init__(self):
+          if hasattr(self, "initialized"):
+              return
+          self.initialized = True
+
+REAL-WORLD USES
+  Logger, configuration manager, DB connection pool, cache, thread pool.
+
+RECALL CUE
+  One logbook for the whole office. Everyone who asks for "the logger"
+  is handed the same book.
+
+
+================================================================================
+2. FACTORY  (Simple Factory)                                 file: Factory.py
+================================================================================
+ONE-LINER
+  Put the "which class should I create?" decision in ONE place. The client
+  asks for a type by name and gets an object back, without ever calling
+  Car() or Bus() itself.
+
+YOUR EXAMPLE: VehicleFactory
+  Vehicle (ABC)        start(), stop()           <- common interface
+     ├── Car           start(), stop() + extra service methods
+     └── Bus           start(), stop()
+
+  VehicleFactory.get_vehicle("Car")   -> Car()
+  VehicleFactory.get_vehicle("Bus")   -> Bus()
+  anything else                       -> ValueError("Unknown vehicle type")
+
+ROLES
+  Product interface  -> Vehicle
+  Concrete products  -> Car, Bus
+  Factory            -> VehicleFactory
+                        (get_vehicle is a @staticmethod, so you call it on the
+                         class and never need a factory object)
+  Client             -> __main__ (only knows about Vehicle and the factory)
+
+OUTPUT (main parts)
+  Car is starting !!
+  Car is stopped !!
+  ...
+  Bus is starting !!
+  Bus is stopped !!
+
+WHY
+  - The client depends only on the Vehicle interface, not on Car or Bus.
+  - Creation logic lives in one place, so there is one place to change.
+  - Adding a Truck = a new class + one more branch in get_vehicle().
+    Code that uses vehicles doesn't change.
+
+NOTE
+  This is the "Simple Factory". The GoF "Factory Method" goes one step further:
+  creation happens in a method that SUBCLASSES override
+  (e.g. CarFactory.create() / BusFactory.create()).
+
+BONUS IN THIS FILE: ACCESS MODIFIERS IN PYTHON
+  check_fuel()        PUBLIC     usable from anywhere
+  _check_engine()     PROTECTED  one underscore = a convention only:
+                                 "internal / for subclasses, please don't touch"
+  __check_battery()   PRIVATE    two underscores = NAME MANGLING
+                                 Python renames it to _Car__check_battery
+
+      vehicle1.__check_battery()       -> AttributeError
+      vehicle1._Car__check_battery()   -> works (mangling is NOT real privacy)
+
+  service() calls all three from INSIDE the class. That is always allowed.
+  (See java_python_access_modifiers_guide.docx in this folder: Java vs Python.)
+
+RECALL CUE
+  A vehicle showroom counter: you say "Car" or "Bus", and the counter hands
+  you the right vehicle. You never go to the assembly line yourself.
+
+
+================================================================================
+3. BUILDER                                                   file: Builder.py
+================================================================================
+ONE-LINER
+  Construct a complex object STEP BY STEP, keeping the construction logic
+  separate from the object itself.
+
+YOUR EXAMPLE: CarBuilder
+  Car has defaults: color="red", sunroof=False, wheels=4.
+  CarBuilder creates a default Car, then configures it one attribute at a time:
+
+      car = (
+          CarBuilder()
+          .add_color("Yellow")
+          .add_sunroof(True)
+          .add_wheels(4)
+          .build()
+      )
+
+THE TRICK: METHOD CHAINING
+  Every add_*() method changes one attribute and then does  return self
+  (the BUILDER), so you can chain the next call with ".".
+  build() is the only method that returns the CAR (the product), not the
+  builder.
+
+ROLES
+  Product -> Car
+  Builder -> CarBuilder (add_color, add_sunroof, add_wheels, build)
+  Client  -> __main__
+
+OUTPUT
+  Car(color=Yellow, sunroof=True, wheels=4)
+
+WHY
+  Avoids a giant constructor like
+      Car(color, sunroof, wheels, gps, seats, engine, music_system, ...)
+  where you must remember argument order and pass values you don't care about.
+  With a builder you set only what you need, and it reads like a sentence.
+
+PYTHON CONCEPTS LEARNED IN THIS FILE
+  from __future__ import annotations
+      Lets you write  -> CarBuilder  as a type hint INSIDE the CarBuilder class.
+      (The class isn't fully defined yet at that point.)
+  __str__   controls what print(car) shows.
+
+RECALL CUE
+  A car configurator website: pick colour -> pick sunroof -> pick wheels
+  -> click "Build". Every click gives you the configurator back until the end.
+
+
+================================================================================
+4. PROTOTYPE                                               file: Prototype.py
+================================================================================
+ONE-LINER
+  Create new objects by CLONING an existing, already-configured object
+  (the prototype) instead of building each one from scratch.
+
+YOUR EXAMPLE: game characters
+  CharacterFactory creates ONE default prototype when it is constructed:
+      Character("DefaultName", health=100, attack_power=50, level=1)
+
+  Need a character? Clone the prototype and change only what's different:
+      hero = factory.create_character_with_new_name("Warrior")  # copy + rename
+      boss = factory.create_character_with_new_level(10)        # copy + level
+
+HOW IT WORKS
+  cloned = copy.copy(self.prototype_character)
+    - makes a NEW object with the same attribute values
+    - does NOT call __init__ again
+    - changing the clone never changes the prototype, so the prototype stays
+      clean for the next clone
+
+OUTPUT
+  Character [Name=Warrior, Health=100, AttackPower=50, Level=1]
+  Character [Name=DefaultName, Health=100, AttackPower=50, Level=10]
+  -> both cloned from the SAME prototype. The boss kept "DefaultName"
+     because only its level was changed.
+
+SHALLOW vs DEEP COPY  (the interview question)
+  copy.copy()      SHALLOW: new outer object, but nested objects are SHARED.
+                   If Character had a Weapon object, the hero AND the
+                   prototype would point to the SAME Weapon.
+  copy.deepcopy()  DEEP: copies nested objects too, so they are fully
+                   independent.
+  Rule of thumb: if the object holds mutable things (lists, dicts, other
+  objects), use deepcopy.
+
+WHY
+  Creation can be expensive or complicated (loading assets, many settings).
+  Build one fully configured prototype once, clone it many times, and tweak
+  only the differences.
+
+JAVA vs PYTHON
+  Java   : implements Cloneable  +  super.clone()
+  Python : copy.copy(obj) / copy.deepcopy(obj). No interface needed.
+
+RECALL CUE
+  A game spawning hundreds of enemies: photocopy the default character,
+  then write a new name or level on the copy.
+
+
+================================================================================
+CONFUSION CORNER
+================================================================================
+  Factory vs Builder
+    Factory : decides WHICH class to create, in a single call.
+              ("Give me a Car.")
+    Builder : decides HOW one object is configured, step by step.
+              ("Yellow, with sunroof, 4 wheels... build.")
+
+  Factory vs Prototype
+    Factory   : creates a FRESH object through its constructor.
+    Prototype : COPIES an existing object (no constructor call).
+
+  Singleton vs Flyweight (Flyweight is in StructuralDP/)
+    Singleton : ONE instance for the whole class.
+    Flyweight : ONE shared instance PER unique key (one "A-Arial-12",
+                one "B-Arial-12", ...).
+
+  Same name, different pattern!
+    Prototype.py has a CharacterFactory: it creates characters by CLONING.
+    StructuralDP/flyweightdp.py also has a CharacterFactory: it CACHES and
+    SHARES letter objects. When you see "CharacterFactory", ask yourself:
+    clone (Prototype) or share (Flyweight)?
+
+  Which one when?
+    "There must be exactly one of these"         -> Singleton
+    "Client shouldn't know the concrete class"   -> Factory
+    "Too many constructor options"               -> Builder
+    "Creating from scratch is costly / repeated" -> Prototype
+================================================================================

@@ -1,0 +1,476 @@
+================================================================================
+                 BEHAVIORAL DESIGN PATTERNS  -  REVISION NOTES
+                 Folder: BehavioralDP/
+================================================================================
+
+Behavioral patterns answer ONE question:
+        "How do objects COMMUNICATE and SHARE RESPONSIBILITY?"
+
+  PATTERN         FILE            YOUR EXAMPLE
+  --------------  --------------  ----------------------------------------------
+  Strategy        strategydp.py   PaymentProcessor: credit / debit / crypto
+  State           statedp.py      Traffic light: Red -> Yellow -> Green
+  Template Method templatedp.py   Coffee & Tea recipe (with a hook)
+  Command         commanddp.py    Remote control -> Light / Fan
+  Chain of Resp.  cordp.py        Leave approval: TeamLead -> Manager -> Director
+  Observer        observerdp.py   YouTube channel notifying subscribers
+  Mediator        mediatordp.py   Auction house between bidders
+  Memento         momentodp.py    Text editor undo (snapshots)
+  Visitor         visitordp.py    Hospital: Diagnosis & Billing visit patients
+
+Each section below: ONE-LINER -> YOUR EXAMPLE -> HOW IT WORKS -> OUTPUT ->
+WHY / KEY POINTS -> RECALL CUE.
+
+
+================================================================================
+1. STRATEGY                                                 file: strategydp.py
+================================================================================
+ONE-LINER
+  Put each algorithm in a family of interchangeable algorithms into its own
+  class, and let the client swap them at runtime.
+
+YOUR EXAMPLE: payment at checkout
+  PaymentStrategy (interface): make_payment()
+    ├── CreditCardPayment
+    ├── DebitCardPayment
+    └── CryptoPayment
+
+  PaymentProcessor (the CONTEXT) HAS-A strategy:
+    __init__(strategy)               start with one strategy
+    set_payment_strategy(strategy)   swap it at runtime
+    ProcessPayment()                 self.__payment_strategy.make_payment()
+
+  processor = PaymentProcessor(credit_card);   processor.ProcessPayment()
+  processor.set_payment_strategy(debit_card);  processor.ProcessPayment()
+  processor.set_payment_strategy(crypto);      processor.ProcessPayment()
+
+OUTPUT
+  Credit card payment completed !!
+  Debit card payment completed !!
+  Crypto payment completed !!
+
+WHY
+  - Replaces   if method == "credit": ... elif method == "debit": ...
+  - Adding UPI or PayPal = one new class. PaymentProcessor stays untouched
+    (Open/Closed Principle).
+
+KEY POINT
+  The CLIENT chooses the strategy. The strategies know nothing about each
+  other.
+
+RECALL CUE
+  Checkout page: the same "Pay" button, and you choose card, debit or crypto.
+
+
+================================================================================
+2. STATE                                                       file: statedp.py
+================================================================================
+ONE-LINER
+  An object changes its behaviour when its internal state changes. Each state
+  is a class that knows its own behaviour AND which state comes next.
+
+YOUR EXAMPLE: traffic light
+  LightState (interface): next(context), get_light()
+    RedLight.next(ctx)     ->  ctx.currlight = YellowLight()
+    YellowLight.next(ctx)  ->  ctx.currlight = GreenLight()
+    GreenLight.next(ctx)   ->  ctx.currlight = RedLight()
+
+  LightContext holds the current state (starts as RedLight):
+    next()        self.currlight.next(self)   # delegate; the state switches
+    get_light()   self.currlight.get_light()
+
+      Red ──next──▶ Yellow ──next──▶ Green ──next──▶ Red ──▶ ...
+
+EXPECTED OUTPUT
+  Red
+  Yellow
+  Green
+  Red
+
+KEY POINT
+  The context passes ITSELF (self) into state.next(ctx), so the state can
+  replace ctx.currlight. There is no if/elif on "current colour" anywhere.
+
+GOTCHA: this file currently CRASHES on your Python (3.9)
+  NameError: name 'LightContext' is not defined
+  LightState uses the type hint  lightcontext: LightContext  before the
+  LightContext class exists. Fix: add this as the FIRST line of the file:
+      from __future__ import annotations
+  (mediatordp.py and Builder.py already do this.) Quoting it as
+  "LightContext" also works.
+
+RECALL CUE
+  A traffic signal: you don't tell it the next colour. It already knows.
+
+
+================================================================================
+3. TEMPLATE METHOD                                          file: templatedp.py
+================================================================================
+ONE-LINER
+  The parent class fixes the skeleton (the order of steps) of an algorithm,
+  and subclasses fill in or customise specific steps.
+
+YOUR EXAMPLE: making a hot beverage
+  BeverageWithHook.prepare_recipe()     <- the TEMPLATE METHOD (fixed order)
+      1. boil_water()                      CONCRETE  (written in the parent)
+      2. brew()                            ABSTRACT  (child MUST implement)
+      3. pour_in_cup()                     CONCRETE  (written in the parent)
+      4. if customer_wants_condiments():   HOOK      (child MAY override)
+             add_condiments()              ABSTRACT  (child MUST implement)
+
+  CustomCoffee : brew = "Brewing coffee...", condiments = sugar & milk,
+                 hook returns False  -> condiments are SKIPPED
+  CustomTea    : brew = "Steeping the tea...", condiments = lemon,
+                 hook returns True   -> lemon is added
+
+OUTPUT
+  Making custom coffee...
+  Water is boiling !!
+  Brewing coffee...
+  Pouring in cup !!              <- no "Adding sugar and milk" (hook = False)
+
+  Making custom tea...
+  Water is boiling !!
+  Steeping the tea...
+  Pouring in cup !!
+  Adding lemon...
+
+THE 3 KINDS OF STEPS
+  Concrete step  the same for everyone                 boil_water, pour_in_cup
+  Abstract step  every child must define it            brew, add_condiments
+  Hook           has a default; a child CAN override   customer_wants_condiments
+                 it to steer the flow
+
+  (Your note) Hook: an optional method that lets subclasses influence a step
+  or decision in the parent's algorithm.
+
+KEY POINT: the "Hollywood Principle": "Don't call us, we'll call you."
+  The parent's prepare_recipe() calls the child's methods, never the other
+  way round. Children can't change the ORDER of the steps.
+
+RECALL CUE
+  Every hot drink: boil -> brew -> pour -> (maybe) add extras.
+  Coffee and tea differ only in the brew and the extras.
+
+
+================================================================================
+4. COMMAND                                                  file: commanddp.py
+================================================================================
+ONE-LINER
+  Wrap a request (an action + the object it acts on) in an object, so that
+  whoever triggers it doesn't need to know what it does.
+
+YOUR EXAMPLE: a universal remote control
+  RECEIVERS (do the real work)   Light, Fan  ->  turnon(), turnoff()
+  COMMAND (interface)            execute()
+  CONCRETE COMMANDS              LightOnCommand(light), LightOffCommand(light)
+                                 FanOnCommand(fan),     FanOffCommand(fan)
+                                 Each one stores its receiver, and execute()
+                                 calls the right method on it.
+  INVOKER                        RemoteControl
+                                   execute()        -> self.command.execute()
+                                   setCommand(cmd)  -> swap the button's command
+  CLIENT                         __main__ creates and wires everything up
+
+FLOW
+  remote.execute()
+     -> LightOnCommand.execute()
+          -> light.turnon()            "Light turned on !!"
+
+  remote.setCommand(fanoncommand)
+  remote.execute()                     "Fan turned on !!"
+
+OUTPUT
+  Light turned on !!
+  Light turned off !!
+  Fan turned on !!
+  Fan turned off !!
+
+KEY POINTS
+  - The remote knows NOTHING about lights or fans, only "execute()".
+  - Creating a command does NOT run it. It runs when execute() is called,
+    which is why commands can be stored, queued, logged, scheduled, or undone.
+  - Natural extension: add undo() to each command
+    (LightOnCommand.undo -> light.turnoff()) and keep a history stack.
+
+RECALL CUE
+  A programmable remote: each button holds a command card. Swap the card and
+  the same button controls a different device.
+
+
+================================================================================
+5. CHAIN OF RESPONSIBILITY (CoR)                                file: cordp.py
+================================================================================
+ONE-LINER
+  Pass a request along a chain of handlers. Each handler either deals with it
+  or forwards it to the next one.
+
+YOUR EXAMPLE: leave approval
+  Approver (base): self.next_approver, set_next(approver), approve_leave(days)
+    TeamLead   approves  <= 2 days,   otherwise forwards to next
+    Manager    approves  <= 5 days,   otherwise forwards to next
+    Director   approves  <= 10 days,  otherwise "To many leaves, request
+                                      denied !!"  (end of the chain)
+
+  Building the chain:
+      teamlead.set_next(manager)
+      manager.set_next(director)
+
+      TeamLead ──▶ Manager ──▶ Director ──▶ (denied)
+        <= 2         <= 5        <= 10
+
+  teamlead.approve_leave(5):
+      TeamLead : 5 <= 2 ?  no   -> forward
+      Manager  : 5 <= 5 ?  yes  -> approved
+
+EXPECTED OUTPUT
+  Leaved approved by Manager for 5 days
+
+KEY POINTS
+  - The employee (client) only talks to the FIRST handler (the team lead).
+  - The sender doesn't know who will finally handle the request.
+  - Add or reorder approvers (e.g. HR) by changing only the set_next() calls.
+  - Always decide what happens at the END of the chain (Director denies).
+
+GOTCHA: this file currently CRASHES on your Python (3.9)
+  NameError: name 'Approver' is not defined
+  set_next(self, approver: Approver) refers to Approver inside its own class
+  body, before the class is finished. Fix: add as the FIRST line:
+      from __future__ import annotations
+
+RECALL CUE
+  Asking for leave: TL -> Manager -> Director. The request moves up until it
+  reaches someone with enough authority.
+
+
+================================================================================
+6. OBSERVER                                                file: observerdp.py
+================================================================================
+ONE-LINER
+  One object (the SUBJECT) keeps a list of dependents (OBSERVERS) and
+  notifies all of them automatically when something happens.
+  (One-to-many. Also called publish/subscribe.)
+
+YOUR EXAMPLE: a YouTube channel
+  Subscriber (observer interface): update()
+    ├── SMSSubscriber("Monty")       "Sending SMS notification to Monty"
+    ├── EmailSubscriber("Billu")     "Sending Email notification to Billu"
+    └── YoutubeSubscriber("Shonty")  "Sending YouTube notification to Shonty"
+
+  YoutubeChannel (subject interface):
+      add_subscriber, remove_subscriber, notify_subscribers, upload_video
+  YoutubeChannelImpl keeps  self._subscribers = []
+
+  ytchannel.upload_video(title)
+     -> prints "Video has been published ..."
+     -> notify_subscribers()
+          -> for each subscriber: subscriber.update()   (polymorphism)
+
+OUTPUT
+  Video has been published with title: Believe Shonty, Monty and Billu !!
+  Sending SMS notification to Monty
+  Sending Email notification to Billu
+  Sending YouTube notification to Shonty
+  (in the order they subscribed)
+
+KEY POINTS
+  - The subject only knows "a list of Subscribers that have update()",
+    not their concrete types.
+  - Subscribe and unsubscribe at runtime.
+  - Loose coupling: add a WhatsAppSubscriber without touching the channel.
+  - Push vs pull: your update() takes no data. Often you pass the event
+    instead, e.g. update(title), so observers know WHAT happened.
+
+RECALL CUE
+  Pressing the bell icon: when the channel uploads, every subscriber is
+  pinged, each through their own channel (SMS / Email / app).
+
+
+================================================================================
+7. MEDIATOR                                                file: mediatordp.py
+================================================================================
+ONE-LINER
+  Objects don't talk to each other directly. They talk through one central
+  mediator that coordinates them.
+
+YOUR EXAMPLE: an auction house
+  ActionMediator (mediator interface): registerBidder(), placeBid()
+  AuctionHouse (concrete mediator)   : keeps a list of bidders
+      placeBid(bidder, amount) -> tells every OTHER bidder: b.receiveBid(...)
+  Bidder (colleague):
+      __init__        registers itself with the auction house
+      setBid(amount)  -> auction_house.placeBid(self, amount)
+      receiveBid()    prints the bid it heard about
+
+  Bunty, Shunty and Bubli register. Bunty bids 500, and the AuctionHouse tells
+  Shunty and Bubli. Bidders NEVER hold references to each other.
+
+FLOW
+  Bidder.setBid() -> AuctionHouse.placeBid() -> other bidders' receiveBid()
+
+OUTPUT
+  Bid of amount 500 is placed by the bidder Bunty       <- heard by Shunty
+  Bid of amount 500 is placed by the bidder Bunty       <- heard by Bubli
+  Bid of amount 600 is placed by the bidder Shunty      (x2)
+  Bid of amount 600 is placed by the bidder Shunty
+  Bid of amount 1000 is placed by the bidder Bubli      (x2)
+  Bid of amount 1000 is placed by the bidder Bubli
+  Each line appears TWICE because the 2 OTHER bidders each receive it.
+  (receiveBid doesn't print who is listening; add self.name to see it.)
+
+ROLES (from your notes)
+  Mediator interface  -> ActionMediator
+  Concrete mediator   -> AuctionHouse
+  Colleague           -> Bidder
+  Client              -> __main__
+
+WHY
+  N objects talking directly = up to N*(N-1) connections (spaghetti).
+  With a mediator           = N connections (everyone <-> the hub).
+  Adding a new bidder doesn't require changing existing bidders.
+
+GOLDEN RULE (your note)
+  Instead of objects talking to each other directly, let them talk through a
+  central mediator.
+
+RECALL CUE
+  Bidders in an auction don't shout at each other. They bid to the
+  auctioneer, who announces each bid to the room.
+
+
+================================================================================
+8. MEMENTO                                                  file: momentodp.py
+================================================================================
+ONE-LINER
+  Capture snapshots of an object's state so it can be restored later (undo),
+  without exposing its internals.
+  (The pattern is spelled MEMENTO. Your class is named Momento.)
+
+YOUR EXAMPLE: text editor undo
+  ORIGINATOR  TextEditor   write(), save(history), restore(history), display()
+  MEMENTO     Momento      holds one snapshot of the text in a PRIVATE
+                           self.__text; read-only via get_text()
+  CARETAKER   History      a STACK (list) of mementos:
+                           add_text() pushes, get_last() pops
+
+  The editor types a 5-letter word one letter at a time and calls
+  editor.save(history) after EVERY letter. restore() then pops snapshots:
+
+      write -> save -> write -> save -> ...   (stack: 1, 2, 3, 4, 5 letters)
+      restore()  -> pop the top snapshot -> editor.text = snapshot text
+
+KEY POINTS
+  - Only the editor creates and reads mementos. History only stores them and
+    never looks inside, so encapsulation is preserved.
+  - A memento is a frozen, read-only copy of state.
+  - History is a STACK: the last saved state is the first one restored
+    (LIFO), exactly like Ctrl+Z.
+
+GOTCHA: the expected-output comments in your file are OFF BY ONE
+  save() runs AFTER the last write, so the top snapshot == the current text.
+      display()  -> 5 letters
+      restore()  -> pops the 5-letter snapshot -> still 5 letters (no change!)
+      restore()  -> pops the 4-letter snapshot -> 4 letters
+  (Running it really prints 5, 5, 4 letters, not 5, 4, 3 as the comments say.)
+  Fix: save BEFORE changing the text, i.e. snapshot the state you'd want to
+  go back to:
+      editor.save(history)
+      editor.write("X")
+
+RECALL CUE
+  Ctrl+Z in a text editor: every save is a photo of the text, and undo puts
+  the last photo back.
+
+
+================================================================================
+9. VISITOR                                                  file: visitordp.py
+================================================================================
+ONE-LINER
+  Add new operations to a set of classes WITHOUT modifying them, by moving
+  each operation into its own Visitor class (uses DOUBLE DISPATCH).
+
+YOUR EXAMPLE: a hospital
+  ELEMENTS (stable, rarely change): Patient -> accept(visitor)
+    ChildPatient.accept(v)   ->  v.visit_child(self)
+    AdultPatient.accept(v)   ->  v.visit_adult(self)
+    SeniorPatient.accept(v)  ->  v.visit_senior(self)
+
+  VISITORS (the operations; easy to add more):
+    Visitor interface : visit_child(), visit_adult(), visit_senior()
+    DiagnosisVisitor  : diagnosis logic for each patient type
+    BillingVisitor    : billing logic for each patient type
+
+  for patient in patients:
+      patient.accept(diagnosis_visitor)
+      patient.accept(billing_visitor)
+
+DOUBLE DISPATCH (the core idea)
+  adult.accept(billing_visitor)
+    1st dispatch: WHICH accept()?   decided by the PATIENT's type -> Adult
+    2nd dispatch: WHICH visit_*()?  AdultPatient calls visitor.visit_adult(),
+                                    decided by the VISITOR's type -> Billing
+  Result: BillingVisitor.visit_adult runs, the right combination of BOTH
+  types, with no if/isinstance checks.
+
+OUTPUT
+  Diagnosis Visitor visited child Patient !!
+  Billing Visitor visited child Patient !!
+  Diagnosis Visitor visited adult Patient !!
+  Billing Visitor visited adult Patient !!
+  Diagnosis Visitor visited senior Patient !!
+  Billing Visitor visited senior Patient !!
+
+TRADE-OFF
+  New OPERATION (e.g. PharmacyVisitor)  EASY: one new class; patients untouched
+  New ELEMENT   (e.g. InfantPatient)    HARD: every visitor needs visit_infant
+  Use Visitor when the set of classes is stable but the operations keep
+  growing.
+
+RECALL CUE
+  A hospital ward: the patients stay the same, while the doctor (diagnosis)
+  and the billing clerk each visit every patient and handle each age group
+  differently.
+
+
+================================================================================
+CONFUSION CORNER
+================================================================================
+  Strategy vs State  (the code looks almost identical!)
+    Strategy : the CLIENT picks the algorithm.       (you chose crypto)
+    State    : the STATES switch themselves.         (red knows yellow is next)
+
+  Strategy vs Template Method
+    Strategy : swap the WHOLE algorithm via composition (HAS-A), at runtime.
+    Template : the skeleton is fixed in the parent; the child overrides
+               STEPS (IS-A).
+
+  Command vs Strategy vs Mediator  (from your mediatordp.py notes)
+    Command  : encapsulates a REQUEST as an object.       LightOnCommand
+    Strategy : encapsulates interchangeable ALGORITHMS.   CryptoPayment
+    Mediator : centralises COMMUNICATION between objects. AuctionHouse
+
+  Observer vs Mediator
+    Observer : ONE subject broadcasts to MANY listeners (one-way).
+               The channel uploads, subscribers just listen.
+    Mediator : MANY objects talk to each other through a hub (two-way).
+               Each bidder both bids AND hears the others' bids.
+
+  Command vs Memento  (both can give you Undo)
+    Command  : undo by running the REVERSE action (light on <-> off).
+    Memento  : undo by RESTORING a saved snapshot of state.
+
+  Chain of Responsibility vs Decorator  (both are chains with a "next")
+    CoR       : usually ONE handler handles it and the chain STOPS.
+    Decorator : EVERY wrapper adds something and passes the call on.
+
+  Which one when?
+    "Pick one of several algorithms"             -> Strategy
+    "Behaviour depends on current state"         -> State
+    "Same steps, a few differ per subclass"      -> Template Method
+    "Treat an action as an object (queue/undo)"  -> Command
+    "Request goes up a ladder until handled"     -> Chain of Responsibility
+    "Notify many when one thing changes"         -> Observer
+    "Many objects talk to each other: use a hub" -> Mediator
+    "Save and restore previous state"            -> Memento
+    "New operations on a stable class set"       -> Visitor
+================================================================================
